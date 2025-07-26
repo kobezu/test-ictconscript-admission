@@ -1,16 +1,11 @@
 from fastapi import FastAPI, HTTPException, Response, Depends
-from fastapi.responses import RedirectResponse, PlainTextResponse
-from pydantic import BaseModel, Field
+from fastapi.responses import PlainTextResponse
 from datetime import datetime
-import database as db
+
+from models.entry import Entry
+import database.database as db
 
 app = FastAPI()
-
-class Entry(BaseModel):
-  title: str = Field(max_length=120)
-  body: str
-  lat: float | None = None
-  lon: float | None = None
 
 def get_db():
   con = db.get_db_connection()
@@ -39,6 +34,7 @@ def list_entries(con=Depends(get_db)):
 def get_entry(id: str, con=Depends(get_db)):
   entry = db.get_entry(con, id)
   if entry is not None:
+    print(entry)
     return entry
   else:
     raise HTTPException(status_code=404, detail=f"Entry {id} not found")

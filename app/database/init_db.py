@@ -1,8 +1,9 @@
-from database import get_db_connection, insert_entry
+import sqlite3
+from database import insert_entry
 import json
 
 def init_db():
-  con = get_db_connection()
+  con = sqlite3.connect("entries.db")
 
   # Create a db for entries
   con.cursor().execute("""
@@ -16,7 +17,7 @@ def init_db():
             )""")
 
   # Add log entries from data.json to the db
-  with open("../sample-data/data.json") as f:
+  with open("../../sample-data/data.json") as f:
     data = json.load(f)
     for entry in data:
       insert_entry(con, entry)

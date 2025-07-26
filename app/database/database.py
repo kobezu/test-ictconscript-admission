@@ -1,7 +1,10 @@
 import sqlite3
 
+DB_PATH = "database/entries.db"
+
 def get_db_connection():
-  con = sqlite3.connect("entries.db")
+  con = sqlite3.connect(DB_PATH)
+  con.row_factory = sqlite3.Row
   return con
     
 def count_entries(con):

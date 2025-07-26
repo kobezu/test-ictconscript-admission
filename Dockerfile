@@ -10,6 +10,6 @@ COPY ./app ./app
 
 WORKDIR /app
 
-RUN python init_db.py
+RUN cd database && python init_db.py
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
