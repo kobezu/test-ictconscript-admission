@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import database as db
 
+app = FastAPI()
+
 class Entry(BaseModel):
   title: str = Field(max_length=120)
   body: str
@@ -17,11 +19,17 @@ def get_db():
   finally:
     con.close()
 
-app = FastAPI()
-
 @app.get("/")
 def root():
-  return RedirectResponse(url="/docs") 
+  return {
+    "name": "Unit Logbook API",
+    "version": "1.0.0",
+    "endpoints": {
+      "entries": "/entries",
+      "health": "/health",
+      "docs": "/docs"
+    },
+  }
 
 @app.get("/entries")
 def list_entries(con=Depends(get_db)):
@@ -49,6 +57,7 @@ def create_entry(entry: Entry, con=Depends(get_db)):
 def get_health():
   return "OK"
 
+# Respond with 204 - No content when page tries to load favicon.ico
 @app.get("/favicon.ico", include_in_schema=False)
 def ignore_favicon():
   return Response(status_code=204)
