@@ -1,0 +1,32 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/logbook-backend:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Run pytest tests
+        run: docker run --rm $IMAGE_NAME pytest tests/test_api.py
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image to GitHub Container Registry
+        run: docker push $IMAGE_NAME
